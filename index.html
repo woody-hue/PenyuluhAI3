@@ -6,7 +6,6 @@
 <title>Penyuluh Agama Islam AI</title>
 <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <!-- INI ADALAH LIBRARY PUTER.JS -->
-<script src="https://js.puter.com/v2/"></script>
 <style>
 :root {
   --teal: #0d5c4a; --teal-mid: #1a7a62; --teal-light: #2eaa8a; --teal-glow: rgba(13,92,74,.12);
@@ -194,7 +193,6 @@ async function sendMsg(textOverride) {
   msgs.scrollTop = msgs.scrollHeight;
 
   try {
-    // Menyusun format pesan untuk Puter API
     const messagesToSend = [
       { 
         role: 'system', 
@@ -203,13 +201,19 @@ async function sendMsg(textOverride) {
       ...chatHistory
     ];
 
-    // MEMANGGIL MESIN GROK MELALUI PUTER
-    const response = await puter.ai.chat(messagesToSend, { model: 'grok-beta' }); 
+    // MEMANGGIL POLLINATIONS AI (Gratis, Tanpa Key, Langsung via Web)
+    const response = await fetch('https://text.pollinations.ai/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages: messagesToSend })
+    });
+
+    if (!response.ok) throw new Error("Server AI sedang sibuk.");
+
+    // Pollinations langsung mengembalikan teks murni
+    const replyRaw = await response.text(); 
     
     document.getElementById(typingId).remove();
-    
-    // Puter terkadang mengembalikan string langsung atau sebuah object
-    const replyRaw = typeof response === 'string' ? response : (response?.message?.content || "Maaf, terjadi kendala saat memuat balasan.");
     
     // Format bold dan line break agar rapi
     let formattedReply = replyRaw.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
@@ -220,7 +224,7 @@ async function sendMsg(textOverride) {
 
   } catch(e) {
     document.getElementById(typingId).remove();
-    showError("Puter API Error: " + (e.message || "Gagal menghubungi Grok AI. Pastikan koneksi stabil."));
+    showError("AI Error: " + (e.message || "Gagal menghubungi AI. Pastikan koneksi stabil."));
     chatHistory.pop();
   }
 }
