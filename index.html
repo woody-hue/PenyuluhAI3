@@ -360,13 +360,14 @@ function sendAyat(surah, num, ar, idn) {
 }
 
 // ==========================================
-// API HADITS (HADITH.GADING.DEV)
+// API HADITS (HADITH.GADING.DEV) - FIXED
 // ==========================================
+let currentHadithText = ""; // Variabel aman untuk menyimpan teks hadits
+
 async function loadHadis() {
   document.getElementById('hadisContent').innerHTML = "<div style='text-align:center;padding:20px;'>Memuat...</div>";
-  const kit = document.getElementById('hadisSelect').value; // bukhari, muslim
+  const kit = document.getElementById('hadisSelect').value; 
   
-  // Mengambil angka acak 1-300 agar cepat dimuat
   const randomNum = Math.floor(Math.random() * 300) + 1; 
   
   try {
@@ -374,16 +375,25 @@ async function loadHadis() {
     const d = await res.json();
     const h = d.data.contents;
     
+    // Simpan teks terjemahan ke variabel agar tidak merusak kode HTML tombol
+    currentHadithText = h.id; 
+    
     document.getElementById('hadisContent').innerHTML = `
       <div class="h-card">
         <strong>${kit.toUpperCase()} - No. ${h.number}</strong>
         <div class="h-ar">${h.arab}</div>
         <div class="h-id">${h.id}</div>
-        <button class="btn-send" onclick="sendMsg('Jelaskan makna, konteks, dan pelajaran dari hadits ${kit} nomor ${h.number}: ${h.id.replace(/'/g, "")}')">Tanyakan ke AI</button>
+        <button class="btn-send" onclick="sendHadisToAI('${kit}', ${h.number})">Tanyakan ke AI</button>
       </div>`;
   } catch(e) {
     document.getElementById('hadisContent').innerHTML = "<div style='text-align:center;padding:20px;color:red;'>Gagal memuat hadits. Tekan tombol 🔄 di atas.</div>";
   }
+}
+
+// Fungsi khusus yang dipanggil oleh tombol Hadits
+function sendHadisToAI(kitab, nomor) {
+  if (isMobile && sidebarOpen) toggleSidebar(); // Tutup sidebar di HP
+  sendMsg(`Jelaskan makna, konteks, dan pelajaran dari hadits ${kitab} nomor ${nomor}:\n"${currentHadithText}"`);
 }
 
 // Inisialisasi awal
