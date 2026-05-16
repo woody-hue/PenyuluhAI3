@@ -1,8 +1,7 @@
 {
   "name": "penyuluh-agama-ai",
   "version": "1.0.0",
-  "type": "module",
   "dependencies": {
-    "@google/generative-ai": "latest"
+    "@google/generative-ai": "^0.11.0"
   }
 }
