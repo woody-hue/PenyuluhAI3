@@ -322,32 +322,32 @@ async function cariKota() {
 
 async function loadSurahList() {
   try {
-    const res = await fetch('https://api.myquran.com/v2/quran/surah');
+    const res = await fetch('https://equran.id/api/v2/surat');
     const d = await res.json();
     allSurah = d.data;
     filterSurah();
   } catch(e) {
-    document.getElementById('surahList').innerHTML = "Gagal memuat surah.";
+    document.getElementById('surahList').innerHTML = "<div style='text-align:center;padding:20px;'>Gagal memuat daftar surah.</div>";
   }
 }
 
 function filterSurah() {
   const q = document.getElementById('surahSearch')?.value.toLowerCase() || '';
-  const list = allSurah.filter(s => s.nama_latin.toLowerCase().includes(q));
+  const list = allSurah.filter(s => s.namaLatin.toLowerCase().includes(q));
   document.getElementById('surahList').innerHTML = list.map(s => 
-    `<div class="surah-item" onclick="openSurah(${s.nomor}, '${s.nama_latin}')"><span class="s-num">${s.nomor}</span> <span class="s-name">${s.nama_latin}</span> (${s.jumlah_ayat} ayat)</div>`
+    `<div class="surah-item" onclick="openSurah(${s.nomor}, '${s.namaLatin}')"><span class="s-num">${s.nomor}</span> <span class="s-name">${s.namaLatin}</span> (${s.jumlahAyat} ayat)</div>`
   ).join('');
 }
 
 async function openSurah(num, name) {
   document.getElementById('overlay').style.display = 'flex';
   document.getElementById('modalTitle').textContent = name;
-  document.getElementById('modalBody').innerHTML = "Memuat ayat...";
+  document.getElementById('modalBody').innerHTML = "<div style='text-align:center;padding:20px;'>Memuat ayat...</div>";
   try {
-    const res = await fetch(`https://api.myquran.com/v2/quran/surah/${num}`);
+    const res = await fetch(`https://equran.id/api/v2/surat/${num}`);
     const d = await res.json();
     document.getElementById('modalBody').innerHTML = d.data.ayat.map(a => 
-      `<div class="ayat-item"><div class="s-num">${a.nomor}</div><div class="ayat-ar">${a.ar}</div><div class="ayat-tr">${a.idn}</div><button class="btn-send" onclick="sendAyat('${name}', ${a.nomor}, \`${a.ar}\`, \`${a.idn}\`)">Minta Penjelasan AI</button></div>`
+      `<div class="ayat-item"><div class="s-num">${a.nomorAyat}</div><div class="ayat-ar">${a.teksArab}</div><div class="ayat-tr">${a.teksIndonesia}</div><button class="btn-send" onclick="sendAyat('${name}', ${a.nomorAyat}, \`${a.teksArab}\`, \`${a.teksIndonesia.replace(/'/g, "")}\`)">Minta Penjelasan AI</button></div>`
     ).join('');
   } catch(e) {
     document.getElementById('modalBody').innerHTML = "Gagal memuat detail ayat.";
@@ -359,16 +359,30 @@ function sendAyat(surah, num, ar, idn) {
   sendMsg(`Tolong jelaskan makna dan tafsir dari QS ${surah} ayat ${num}: "${ar}" (Artinya: ${idn})`);
 }
 
+// ==========================================
+// API HADITS (HADITH.GADING.DEV)
+// ==========================================
 async function loadHadis() {
-  document.getElementById('hadisContent').innerHTML = "Memuat...";
-  const kit = document.getElementById('hadisSelect').value;
+  document.getElementById('hadisContent').innerHTML = "<div style='text-align:center;padding:20px;'>Memuat...</div>";
+  const kit = document.getElementById('hadisSelect').value; // bukhari, muslim
+  
+  // Mengambil angka acak 1-300 agar cepat dimuat
+  const randomNum = Math.floor(Math.random() * 300) + 1; 
+  
   try {
-    const res = await fetch(`https://api.myquran.com/v2/hadis/${kit}/acak`);
+    const res = await fetch(`https://api.hadith.gading.dev/books/${kit}/${randomNum}`);
     const d = await res.json();
-    const h = d.data;
-    document.getElementById('hadisContent').innerHTML = `<div class="h-card"><strong>${kit.toUpperCase()} - ${h.nomor}</strong><div class="h-ar">${h.arab}</div><div class="h-id">${h.id}</div><button class="btn-send" onclick="sendMsg('Jelaskan makna, konteks, dan pelajaran dari hadits ${kit} nomor ${h.nomor}: ${h.id}')">Tanyakan ke AI</button></div>`;
+    const h = d.data.contents;
+    
+    document.getElementById('hadisContent').innerHTML = `
+      <div class="h-card">
+        <strong>${kit.toUpperCase()} - No. ${h.number}</strong>
+        <div class="h-ar">${h.arab}</div>
+        <div class="h-id">${h.id}</div>
+        <button class="btn-send" onclick="sendMsg('Jelaskan makna, konteks, dan pelajaran dari hadits ${kit} nomor ${h.number}: ${h.id.replace(/'/g, "")}')">Tanyakan ke AI</button>
+      </div>`;
   } catch(e) {
-    document.getElementById('hadisContent').innerHTML = "Gagal memuat hadits.";
+    document.getElementById('hadisContent').innerHTML = "<div style='text-align:center;padding:20px;color:red;'>Gagal memuat hadits. Tekan tombol 🔄 di atas.</div>";
   }
 }
 
