@@ -68,15 +68,25 @@ html, body { height: 100%; overflow: hidden; font-family: 'Plus Jakarta Sans', s
 .msg-bubble.ai { background: var(--cream); border: 1px solid var(--cream-dark); border-bottom-left-radius: 4px; color: var(--ink); }
 .msg-bubble.user { background: var(--teal); color: #fff; border-bottom-right-radius: 4px; }
 .input-zone { background: rgba(255,255,255,.9); backdrop-filter: blur(5px); padding: 12px 16px; border-top: 1px solid var(--cream-dark); }
-.topic-row { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: none; max-width: 720px; margin: 0 auto; }
-.topic-row::-webkit-scrollbar { display: none; }
-.t-pill { padding: 5px 12px; border-radius: 15px; font-size: 11px; font-weight: 600; border: 1.5px solid var(--cream-dark); background: #fff; color: var(--ink-soft); cursor: pointer; white-space: nowrap; font-family: inherit;}
-.t-pill.on { background: var(--teal); border-color: var(--teal); color: #fff; }
 .input-row { display: flex; gap: 8px; max-width: 720px; margin: 0 auto; }
 .input-field { flex: 1; padding: 12px 14px; border: 1.5px solid var(--cream-dark); border-radius: 12px; font-size: 14px; outline: none; font-family: inherit; }
 .input-field:focus { border-color: var(--teal-light); }
 .send-btn { width: 44px; background: var(--teal); color: #fff; border: none; border-radius: 12px; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; }
 .error-banner { background: #fef2f2; color: #dc2626; padding: 10px; text-align: center; font-size: 12px; display: none; font-weight: 500; border-bottom: 1px solid #fca5a5;}
+
+/* Disclaimer Teks (Pengganti Tombol Topik) */
+.disclaimer-text {
+  font-size: 11px;
+  color: var(--ink-soft);
+  text-align: center;
+  padding-bottom: 8px;
+  line-height: 1.4;
+  max-width: 720px;
+  margin: 0 auto;
+}
+.disclaimer-text strong {
+  color: #dc2626; 
+}
 
 /* Modal (Popup Quran/Hadis) */
 .overlay { position: fixed; inset: 0; background: rgba(0,0,0,.6); backdrop-filter: blur(2px); display: none; align-items: center; justify-content: center; z-index: 100; padding: 15px; }
@@ -110,7 +120,6 @@ html, body { height: 100%; overflow: hidden; font-family: 'Plus Jakarta Sans', s
 <div class="error-banner" id="errorBanner"></div>
 
 <div class="app-body">
-  <!-- SIDEBAR -->
   <aside class="sidebar" id="sidebar">
     <div class="s-tabs">
       <button class="s-tab on" onclick="setTab('sholat',this)">Sholat</button>
@@ -118,7 +127,6 @@ html, body { height: 100%; overflow: hidden; font-family: 'Plus Jakarta Sans', s
       <button class="s-tab" onclick="setTab('hadis',this)">Hadis</button>
     </div>
     
-    <!-- Panel Sholat -->
     <div class="s-panel on" id="panel-sholat">
       <div class="sh-hdr"><div class="sh-city" id="shCity">Pilih Kota Anda</div><div class="sh-date" id="shDate"></div></div>
       <div class="sh-search">
@@ -130,13 +138,11 @@ html, body { height: 100%; overflow: hidden; font-family: 'Plus Jakarta Sans', s
       </div>
     </div>
     
-    <!-- Panel Quran -->
     <div class="s-panel" id="panel-quran">
       <div class="q-search"><input id="surahSearch" placeholder="Cari nama surah..." oninput="filterSurah()"></div>
       <div class="surah-list" id="surahList">Memuat...</div>
     </div>
     
-    <!-- Panel Hadis -->
     <div class="s-panel" id="panel-hadis">
       <div class="h-nav" style="flex-direction: column; gap: 8px;">
         <select id="hadisSelect" onchange="loadHadisList()">
@@ -156,7 +162,6 @@ html, body { height: 100%; overflow: hidden; font-family: 'Plus Jakarta Sans', s
     </div>
   </aside>
 
-  <!-- CHAT AREA -->
   <main class="chat-area">
     <div class="messages" id="messages">
       <div style="text-align:center; padding: 30px 20px; color: var(--ink-muted); font-size:14px; line-height: 1.6;">
@@ -166,13 +171,8 @@ html, body { height: 100%; overflow: hidden; font-family: 'Plus Jakarta Sans', s
       </div>
     </div>
     <div class="input-zone">
-      <div class="topic-row">
-        <button class="t-pill on" onclick="setTopic(this,'')">Semua</button>
-        <button class="t-pill" onclick="setTopic(this,'Fiqih')">Fiqih</button>
-        <button class="t-pill" onclick="setTopic(this,'Akidah')">Akidah</button>
-        <button class="t-pill" onclick="setTopic(this,'Tafsir')">Tafsir</button>
-        <button class="t-pill" onclick="setTopic(this,'Hadits')">Hadits</button>
-        <button class="t-pill" onclick="setTopic(this,'Keluarga')">Keluarga</button>
+      <div class="disclaimer-text">
+        <strong>⚠️ Peringatan:</strong> Jawaban AI ini dihasilkan secara otomatis. Untuk fatwa hukum pasti atau ilmu bersanad seperti Tajwid, harap selalu *talaqqi* (merujuk) kembali kepada guru ngaji, ulama, atau KUA setempat.
       </div>
       <div class="input-row">
         <input type="text" id="inputField" class="input-field" placeholder="Tanyakan permasalahan agama di sini..." onkeydown="if(event.key==='Enter')sendMsg()">
@@ -182,7 +182,6 @@ html, body { height: 100%; overflow: hidden; font-family: 'Plus Jakarta Sans', s
   </main>
 </div>
 
-<!-- MODAL (POPUP) -->
 <div class="overlay" id="overlay">
   <div class="modal">
     <div class="modal-hdr">
@@ -240,19 +239,12 @@ function showError(msg) {
 }
 
 let chatHistory = []; 
-let currentTopic = ''; 
 
 function setTab(name, el) {
   document.querySelectorAll('.s-tab').forEach(t=>t.classList.remove('on'));
   document.querySelectorAll('.s-panel').forEach(p=>p.classList.remove('on'));
   el.classList.add('on'); 
   document.getElementById('panel-'+name).classList.add('on');
-}
-
-function setTopic(el, t) {
-  document.querySelectorAll('.t-pill').forEach(p=>p.classList.remove('on'));
-  el.classList.add('on'); 
-  currentTopic = t;
 }
 
 // ==========================================
@@ -281,21 +273,18 @@ async function sendMsg(textOverride) {
   msgs.scrollTop = msgs.scrollHeight;
 
   try {
+    const systemPrompt = `Anda adalah Penyuluh Agama Islam profesional di bawah naungan Kementerian Agama Indonesia. 
+    Tugas Anda adalah memberikan bimbingan dan jawaban yang menyejukkan, moderat, dan menjaga kerukunan.
+    Gunakan bahasa Indonesia baku, santun, dan mudah dipahami.
+    
+    ATURAN WAJIB:
+    1. Landasi jawaban dengan Al-Qur'an dan Sunnah. Jangan menghakimi.
+    2. Fiqih: Jika membahas hukum fiqih (khilafiyah), sebutkan pandangan mazhab umum di Indonesia (Syafi'i) dengan bijak.
+    3. TAJWID (SANGAT KETAT): Anda adalah pakar Tajwid riwayat Hafsh 'an 'Ashim. Ilmu Tajwid adalah ilmu pasti, JANGAN mengarang hukum atau makhraj. Jika ditanya hukum tajwid, jelaskan secara matematis: (1) Nama Hukum, (2) Cara Membaca (harakat/dengung), (3) Contoh.
+    4. Jika Anda tidak tahu pasti, jawab: "Mohon maaf, hal ini memerlukan konfirmasi lebih lanjut. Silakan rujuk ke Asatidz setempat."`;
+
     const messagesToSend = [
-      { 
-        role: 'system', 
-        content: `Anda adalah Penyuluh Agama Islam profesional di bawah naungan Kementerian Agama Indonesia. 
-        Tugas Anda adalah memberikan bimbingan dan jawaban yang menyejukkan, moderat, dan menjaga kerukunan.
-        
-        Aturan wajib:
-        1. Landasi jawaban dengan Al-Qur'an dan Sunnah.
-        2. Jika membahas fiqih (khilafiyah), sebutkan pandangan mazhab umum di Indonesia (Syafi'i) dengan bijak.
-        3. Gunakan bahasa Indonesia baku, santun, dan mudah dipahami.
-        4. Jangan menghakimi. Arahkan pengguna ke ulama/KUA setempat untuk masalah spesifik yang rumit.
-        
-        Topik saat ini: ${currentTopic || 'Umum'}.` 
-      },
-      // Batasi memori hanya 6 chat terakhir agar hemat token & AI tetap fokus
+      { role: 'system', content: systemPrompt },
       ...chatHistory.slice(-6) 
     ];
 
@@ -308,7 +297,7 @@ async function sendMsg(textOverride) {
       body: JSON.stringify({
         model: 'llama-3.3-70b-versatile', 
         messages: messagesToSend,
-        temperature: 0.2, // Rendah agar faktual dan akurat (tidak mengarang dalil)
+        temperature: 0.15, // Rendah agar faktual dan akurat (tidak mengarang dalil)
         max_tokens: 1500
       })
     });
@@ -374,139 +363,166 @@ async function cariKota() {
 // ==========================================
 // 5. AL-QUR'AN (equran.id - Kemenag)
 // ==========================================
-let allSurah = [];
-let currentAyatData = []; // Penyimpanan aman untuk menghindari error quote HTML
+let quranData = [];
 
-async function loadSurahList() {
+async function loadQuranList() {
+  const list = document.getElementById('surahList');
   try {
     const res = await fetch('https://equran.id/api/v2/surat');
-    const d = await res.json();
-    allSurah = d.data;
-    filterSurah();
+    const json = await res.json();
+    quranData = json.data;
+    renderSurahList(quranData);
   } catch(e) {
-    document.getElementById('surahList').innerHTML = "<div style='text-align:center;padding:20px;font-size:12px;'>Gagal memuat daftar surah.</div>";
+    list.innerHTML = "<div style='padding:10px; text-align:center;'>Gagal memuat Al-Qur'an. Pastikan ada koneksi internet.</div>";
   }
+}
+
+function renderSurahList(data) {
+  let html = '';
+  data.forEach(s => {
+    html += `
+      <div class="surah-item" onclick="bacaSurah(${s.nomor})">
+        <div class="s-num">${s.nomor}</div>
+        <div class="s-info">
+          <div class="s-name">${s.namaLatin} (${s.nama})</div>
+          <div class="s-meta">${s.arti} • ${s.jumlahAyat} Ayat</div>
+        </div>
+      </div>
+    `;
+  });
+  document.getElementById('surahList').innerHTML = html;
 }
 
 function filterSurah() {
-  const q = document.getElementById('surahSearch')?.value.toLowerCase() || '';
-  const list = allSurah.filter(s => s.namaLatin.toLowerCase().includes(q));
-  document.getElementById('surahList').innerHTML = list.map(s => 
-    `<div class="surah-item" onclick="openSurah(${s.nomor}, '${s.namaLatin}')">
-      <div class="s-num">${s.nomor}</div> 
-      <div class="s-info">
-        <div class="s-name">${s.namaLatin}</div>
-        <div class="s-meta">${s.arti}</div>
-      </div>
-    </div>`
-  ).join('');
+  const q = document.getElementById('surahSearch').value.toLowerCase();
+  const filtered = quranData.filter(s => s.namaLatin.toLowerCase().includes(q) || s.arti.toLowerCase().includes(q));
+  renderSurahList(filtered);
 }
 
-async function openSurah(num, name) {
-  document.getElementById('overlay').style.display = 'flex';
-  document.getElementById('modalTitle').textContent = `QS. ${name}`;
-  document.getElementById('modalBody').innerHTML = "<div style='text-align:center;padding:20px;'>Memuat ayat...</div>";
-  try {
-    const res = await fetch(`https://equran.id/api/v2/surat/${num}`);
-    const d = await res.json();
-    currentAyatData = d.data.ayat; // Simpan ke variabel global yang aman
-    
-    // Render menggunakan index array, tidak memasukkan teks ke dalam onclick
-    document.getElementById('modalBody').innerHTML = currentAyatData.map((a, index) => 
-      `<div class="ayat-item">
-        <div class="s-num" style="margin-bottom:10px;">${a.nomorAyat}</div>
-        <div class="ayat-ar">${a.teksArab}</div>
-        <div class="ayat-tr">${a.teksIndonesia}</div>
-        <button class="btn-send" onclick="triggerSendAyat('${name}', ${index})">Minta Penjelasan AI</button>
-      </div>`
-    ).join('');
-  } catch(e) {
-    document.getElementById('modalBody').innerHTML = "<div style='text-align:center;padding:20px;color:red;'>Gagal memuat detail ayat.</div>";
-  }
-}
-
-// Pengambil teks yang aman dari variabel array
-function triggerSendAyat(surahName, index) {
-  document.getElementById('overlay').style.display = 'none';
-  const a = currentAyatData[index];
-  sendMsg(`Tolong jelaskan makna dan tafsir dari QS ${surahName} ayat ${a.nomorAyat}:\n"${a.teksArab}"\n(Artinya: ${a.teksIndonesia})`);
-}
-
-// ==========================================
-// 6. HADITS (api.hadith.gading.dev)
-// ==========================================
-let currentHadithText = ""; // Penyimpanan aman
-
-async function loadHadisList() {
-  const kit = document.getElementById('hadisSelect').value;
-  const listEl = document.getElementById('hadisList');
-  listEl.innerHTML = "<div style='text-align:center;padding:20px;font-size:12px;'>Memuat data...</div>";
+async function bacaSurah(nomor) {
+  const modal = document.getElementById('overlay');
+  const modalTitle = document.getElementById('modalTitle');
+  const modalBody = document.getElementById('modalBody');
   
+  modal.style.display = 'flex';
+  modalTitle.textContent = "Memuat Surah...";
+  modalBody.innerHTML = "<div style='text-align:center; padding:20px;'>Mengambil ayat...</div>";
+
   try {
-    const res = await fetch(`https://api.hadith.gading.dev/books/${kit}?range=1-20`);
-    const d = await res.json();
+    const res = await fetch(`https://equran.id/api/v2/surat/${nomor}`);
+    const json = await res.json();
+    const s = json.data;
     
-    listEl.innerHTML = d.data.hadiths.map(h => `
-      <div class="surah-item" onclick="openHadis('${kit}', ${h.number})">
-        <div class="s-num" style="min-width:35px;">${h.number}</div> 
-        <div class="s-info">
-          <div class="s-name" style="white-space:normal; -webkit-line-clamp:2; display:-webkit-box; -webkit-box-orient:vertical;">${h.id}</div>
+    modalTitle.textContent = `Surah ${s.namaLatin}`;
+    let html = '';
+    
+    s.ayat.forEach(a => {
+      // Mengamankan string agar tidak error saat dimasukkan ke fungsi onclick JS
+      const safeTeks = a.teksIndonesia.replace(/'/g, "\\'").replace(/"/g, "&quot;");
+      
+      html += `
+        <div class="ayat-item">
+          <div style="font-size:12px; font-weight:700; color:var(--teal);">Ayat ${a.nomorAyat}</div>
+          <div class="ayat-ar">${a.teksArab}</div>
+          <div class="ayat-tr">${a.teksIndonesia}</div>
+          <button class="btn-send" onclick="tanyaKeAI('Surah ${s.namaLatin} Ayat ${a.nomorAyat}', '${safeTeks}')">
+            Tanyakan Tafsir/Kandungan ke AI
+          </button>
         </div>
-      </div>
-    `).join('');
+      `;
+    });
+    modalBody.innerHTML = html;
   } catch(e) {
-    listEl.innerHTML = "<div style='text-align:center;padding:20px;font-size:12px;color:red;'>Gagal memuat.</div>";
+    modalBody.innerHTML = "<div style='text-align:center; padding:20px;'>Gagal memuat ayat.</div>";
   }
 }
 
-function cariHadisNo() {
-  const num = document.getElementById('hadisSearch').value;
-  const kit = document.getElementById('hadisSelect').value;
-  if(!num) { loadHadisList(); return; }
-  openHadis(kit, num);
+// ==========================================
+// 6. HADITS API (api.hadith.gading.dev)
+// ==========================================
+function loadHadisList() {
+  document.getElementById('hadisList').innerHTML = "<div style='text-align:center; padding:20px; font-size:12px; color:var(--ink-muted);'>Silakan masukkan nomor hadits yang ingin dicari di kotak pencarian.</div>";
 }
 
-async function openHadis(kitab, number) {
-  document.getElementById('overlay').style.display = 'flex';
-  document.getElementById('modalTitle').textContent = `${kitab.toUpperCase()} - No. ${number}`;
-  document.getElementById('modalBody').innerHTML = "<div style='text-align:center;padding:20px;'>Mencari hadits...</div>";
+async function cariHadisNo() {
+  const book = document.getElementById('hadisSelect').value;
+  const num = document.getElementById('hadisSearch').value;
+  const list = document.getElementById('hadisList');
+  
+  if(!num) {
+    list.innerHTML = "<div style='text-align:center; padding:20px; font-size:12px; color:red;'>Masukkan nomor hadits!</div>";
+    return;
+  }
+  
+  list.innerHTML = "<div style='text-align:center; padding:20px;'>Mencari...</div>";
   
   try {
-    const res = await fetch(`https://api.hadith.gading.dev/books/${kitab}/${number}`);
-    const d = await res.json();
+    const res = await fetch(`https://api.hadith.gading.dev/books/${book}/${num}`);
+    const json = await res.json();
     
-    if (d.code !== 200) {
-        document.getElementById('modalBody').innerHTML = "<div style='text-align:center;padding:20px;'>Hadits nomor tersebut tidak ditemukan.</div>";
-        return;
+    if(json.data && json.data.contents) {
+      const h = json.data.contents;
+      const bookName = json.data.name;
+      
+      // Amankan string
+      const safeArab = h.arab.replace(/'/g, "\\'").replace(/"/g, "&quot;");
+      const safeId = h.id.replace(/'/g, "\\'").replace(/"/g, "&quot;").replace(/\n/g, ' ');
+      
+      let html = `
+        <div class="surah-item" onclick="bukaModalHadis('${bookName}', ${h.number}, '${safeArab}', '${safeId}')">
+          <div class="s-info">
+            <div class="s-name" style="white-space: normal;">${bookName} - Nomor ${h.number}</div>
+            <div class="s-meta" style="margin-top:5px; color:var(--teal);">Klik untuk membaca detail</div>
+          </div>
+        </div>
+      `;
+      list.innerHTML = html;
+    } else {
+      list.innerHTML = "<div style='text-align:center; padding:20px; font-size:12px;'>Hadits tidak ditemukan.</div>";
     }
-
-    const h = d.data.contents;
-    currentHadithText = h.id; // Simpan aman di memori
-    
-    document.getElementById('modalBody').innerHTML = `
-      <div class="ayat-item">
-        <div class="ayat-ar">${h.arab}</div>
-        <div class="ayat-tr">${h.id}</div>
-        <button class="btn-send" onclick="triggerSendHadis('${kitab}', ${h.number})">Tanyakan ke AI</button>
-      </div>`;
   } catch(e) {
-    document.getElementById('modalBody').innerHTML = "<div style='text-align:center;padding:20px;color:red;'>Gagal memuat hadits.</div>";
+    list.innerHTML = "<div style='text-align:center; padding:20px; font-size:12px; color:red;'>Gagal mencari hadits.</div>";
   }
 }
 
-// Fungsi eksekusi AI Hadits yang aman
-function triggerSendHadis(kitab, nomor) {
-  document.getElementById('overlay').style.display = 'none';
-  sendMsg(`Tolong jelaskan makna, konteks, dan pelajaran yang bisa diambil dari hadits riwayat ${kitab} nomor ${nomor}:\n"${currentHadithText}"`);
+function bukaModalHadis(bookName, no, arab, terjemahan) {
+  const modal = document.getElementById('overlay');
+  
+  document.getElementById('modalTitle').textContent = `${bookName} (No. ${no})`;
+  document.getElementById('modalBody').innerHTML = `
+    <div class="ayat-item">
+      <div class="ayat-ar">${arab}</div>
+      <div class="ayat-tr">${terjemahan}</div>
+      <button class="btn-send" onclick="tanyaKeAI('${bookName} Nomor ${no}', '${terjemahan}')">
+        Tanyakan Syarah/Makna Hadits ke AI
+      </button>
+    </div>
+  `;
+  modal.style.display = 'flex';
 }
 
 // ==========================================
-// INIT PERTAMA KALI JALAN
+// 7. INTEGRASI MODAL KE CHAT AI
 // ==========================================
-window.onload = () => { 
-  loadSurahList(); 
-  loadHadisList(); 
+function tanyaKeAI(sumber, teks) {
+  document.getElementById('overlay').style.display = 'none';
+  const inputField = document.getElementById('inputField');
+  inputField.value = `Tolong jelaskan kandungan dan pelajaran yang bisa diambil dari ${sumber} berikut ini:\n\n"${teks}"`;
+  
+  inputField.focus();
+  if(isMobile && sidebarOpen) toggleSidebar();
+}
+
+// ==========================================
+// 8. INISIALISASI SAAT HALAMAN DIMUAT
+// ==========================================
+window.onload = () => {
+  loadQuranList();
+  loadHadisList();
+  document.getElementById('kotaInput').value = "Jakarta";
+  cariKota();
 };
+
 </script>
 </body>
 </html>
